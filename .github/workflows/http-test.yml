@@ -1,0 +1,62 @@
+name: Run HTTP test
+
+on:
+  - push
+
+jobs:
+  nginx-php-fpm:
+
+    runs-on: ubuntu-22.04
+
+    env:
+      PHP_VERSION: 8.1
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+
+      # To be compatible with nektos/act
+      - name: Install required packages
+        if: ${{ env.ACT }}
+        run: |
+          sudo apt update
+          sudo apt install -y --no-upgrade php${{ env.PHP_VERSION }}-fpm nginx gettext-base
+
+      - name: Setup PHP-FPM
+        env:
+          VERSION: ${{ env.PHP_VERSION }}
+        run: |
+          sudo apt install -y --no-upgrade php$VERSION-fpm
+          sudo /usr/sbin/php-fpm$VERSION --test
+          sudo systemctl start php$VERSION-fpm
+          sudo chmod 644 /var/log/php$VERSION-fpm.log
+
+      - uses: dominicwatson/github-action-envsubst@v1
+        with:
+          files: nginx/phpfpm.conf
+          patterns: $GITHUB_WORKSPACE $PHP_VERSION
+
+      - name: Setup Nginx
+        run: |
+          sudo rm /etc/nginx/sites-enabled/default
+          sudo ln -sfv ${GITHUB_WORKSPACE}/nginx/phpfpm.conf /etc/nginx/sites-enabled/phpfpm
+          echo "::group::/etc/nginx/sites-enabled"
+          ls -al /etc/nginx/sites-enabled
+          cat /etc/nginx/sites-enabled/*
+          echo "::endgroup::"
+          sudo nginx -t
+          sudo systemctl start nginx
+
+      - name: Send request to /
+        run: curl -vf localhost
+
+      - uses: actions/upload-artifact@v3
+        if: failure() && !env.ACT
+        with:
+          name: diagnostic
+          path: |
+            /var/log/nginx/
+            /var/log/php*.log
