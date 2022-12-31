@@ -56,6 +56,8 @@ jobs:
           echo "::group::ls -al ${{ github.workspace }}"
           ls -al ${{ github.workspace }}
           ls -al ${{ github.workspace }}/public
+          df -h
+          ls -al ../
           echo "::endgroup::"
           sudo usermod -aG docker www-data
           sudo chown -R www-data ${{ github.workspace}}/public
