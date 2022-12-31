@@ -62,6 +62,8 @@ jobs:
           sudo usermod -aG docker www-data
           sudo chown -R www-data ${{ github.workspace}}/public
           sudo chmod -R 777 public
+          sudo cp public/* /var/www/html/
+          sudo rm -rf /var/www/html/index*.html
 
       - name: Send request to /
         run: curl -vf localhost
