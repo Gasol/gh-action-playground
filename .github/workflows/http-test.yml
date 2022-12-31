@@ -55,6 +55,7 @@ jobs:
           sudo usermod -aG docker www-data
           sudo chown -R www-data ${{ github.workspace }}
           sudo chmod -R 777 public
+          echo '<h1>test</h1>' >> public/index.html
           echo "::group::debug"
           ls -al
           ls -al ../
