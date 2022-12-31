@@ -50,20 +50,9 @@ jobs:
           sudo nginx -t
           sudo systemctl start nginx
 
-      - name: Fix permission
-        if: ${{ !env.ACT }}
+      - name: Sync public dir
         run: |
-          echo "::group::ls -al ${{ github.workspace }}"
-          ls -al ${{ github.workspace }}
-          ls -al ${{ github.workspace }}/public
-          df -h
-          ls -al ../
-          echo "::endgroup::"
-          sudo usermod -aG docker www-data
-          sudo chown -R www-data ${{ github.workspace}}/public
-          sudo chmod -R 777 public
-          sudo cp public/* /var/www/html/
-          sudo rm -rf /var/www/html/index*.html
+          sudo rsync -av --chown=www-data:www-data --delete --delete-after public/ /var/www/html
 
       - name: Send request to /
         run: curl -vf localhost
