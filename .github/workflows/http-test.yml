@@ -60,3 +60,18 @@ jobs:
           path: |
             /var/log/nginx/
             /var/log/php*.log
+
+  act-nginx-php-fpm:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install act
+        run: curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+
+      - run: |
+          export PATH="$GITHUB_WORKSPACE/bin:$PATH"
+          make act
+
