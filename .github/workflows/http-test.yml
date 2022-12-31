@@ -50,6 +50,17 @@ jobs:
           sudo nginx -t
           sudo systemctl start nginx
 
+      - name: Fix permission
+        if: ${{ !env.ACT }}
+        run: |
+          echo "::group::ls -al ${{ github.workspace }}"
+          ls -al ${{ github.workspace }}
+          ls -al ${{ github.workspace }}/public
+          echo "::endgroup::"
+          sudo usermod -aG docker www-data
+          sudo chown -R www-data ${{ github.workspace}}/public
+          sudo chmod -R 777 public
+
       - name: Send request to /
         run: curl -vf localhost
 
