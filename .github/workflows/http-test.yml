@@ -52,6 +52,9 @@ jobs:
 
       - name: Sync public dir
         run: |
+          echo "::group::mount"
+          mount
+          echo "::endgroup::"
           sudo rsync -av --chown=www-data:www-data --delete --delete-after public/ /var/www/html
 
       - name: Send request to /
