@@ -50,6 +50,19 @@ jobs:
           sudo nginx -t
           sudo systemctl start nginx
 
+      - name: Fix permission
+        run: |
+          sudo usermod -aG docker www-data
+          sudo chown -R www-data ${{ github.workspace }}
+          sudo chmod -R 777 public
+          echo "::group::debug"
+          ls -al
+          ls -al ../
+          ls -al ../../
+          ls -al ../../../
+          df -h
+          mount
+          echo "::endgroup::"
       - name: Sync public dir
         run: |
           echo "::group::mount"
