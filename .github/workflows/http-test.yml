@@ -23,7 +23,7 @@ jobs:
         if: ${{ env.ACT }}
         run: |
           sudo apt update
-          sudo apt install -y --no-upgrade php${{ env.PHP_VERSION }}-fpm nginx gettext-base
+          sudo apt install -y --no-upgrade php${{ env.PHP_VERSION }}-fpm nginx gettext-base rsync
 
       - name: Setup PHP-FPM
         env:
