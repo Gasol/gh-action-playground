@@ -56,6 +56,7 @@ jobs:
           sudo usermod -aG docker www-data
           sudo chown -R www-data:www-data ${{ github.workspace }}
           sudo chmod -R 777 public
+          sudo -u www-data bash -c 'cd ${{ github.workspace }}/public; pwd; whoami'
           sudo -u www-data stat /home/runner/work/gh-action-playground/gh-action-playground/public
           sudo -u www-data stat /home/runner/work/gh-action-playground/gh-action-playground
           sudo -u www-data stat /home/runner/work/gh-action-playground
