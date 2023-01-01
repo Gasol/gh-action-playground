@@ -55,10 +55,13 @@ jobs:
           sudo usermod -aG docker www-data
           sudo chown -R www-data ${{ github.workspace }}
           sudo chmod -R 777 public
-          sudo -u www-data stat .
-          sudo -u www-data stat ..
-          sudo -u www-data stat ../..
-          sudo -u www-data stat ../../..
+          sudo -u www-data stat /home/runner/work/gh-action-playground/gh-action-playground/public
+          sudo -u www-data stat /home/runner/work/gh-action-playground/gh-action-playground
+          sudo -u www-data stat /home/runner/work/gh-action-playground
+          sudo -u www-data stat /home/runner/work
+          sudo -u www-data stat /home/runner
+          sudo -u www-data stat /home
+          sudo -u www-data stat /
           echo '<h1>test</h1>' >> public/index.html
           echo "::group::debug"
           ls -al
